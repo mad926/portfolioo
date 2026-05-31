@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Eliana — Tattoo Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --black: #080808;
+  --ink: #0e0e0e;
+  --charcoal: #1a1a1a;
+  --ash: #2e2e2e;
+  --smoke: #444;
+  --mist: #888;
+  --silver: #b8b8b8;
+  --white: #f0ede8;
+  --red: #c0392b;
+  --red-dim: #7a1f17;
+  --gold: #b8975a;
+  --gold-dim: #6b5430;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Libre Baskerville', serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CUSTOM CURSOR */
+.cursor {
+  position: fixed; width: 10px; height: 10px;
+  background: var(--red); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform .1s, width .2s, height .2s, background .2s;
+  mix-blend-mode: normal;
+}
+.cursor-ring {
+  position: fixed; width: 36px; height: 36px;
+  border: 1px solid rgba(192,57,43,0.5); border-radius: 50%;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform .15s ease, width .3s, height .3s;
+}
+body:hover .cursor { opacity:1; }
+
+/* NOISE OVERLAY */
+body::before {
+  content:''; position:fixed; inset:0; z-index:1000; pointer-events:none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.35;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:500;
+  display:flex; justify-content:space-between; align-items:center;
+  padding: 1.6rem 4rem;
+  background: linear-gradient(to bottom, rgba(8,8,8,0.97) 0%, transparent 100%);
+}
+.nav-logo {
+  font-family: 'Cinzel', serif; font-size:1.5rem; font-weight:900;
+  letter-spacing: 0.3em; color: var(--white);
+  text-transform: uppercase;
+}
+.nav-logo span { color: var(--red); }
+.nav-links { display:flex; gap:2.5rem; list-style:none; }
+.nav-links a {
+  font-family: 'Share Tech Mono', monospace; font-size:0.68rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--mist); text-decoration:none;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--red); }
+.nav-book {
+  font-family: 'Share Tech Mono', monospace; font-size:0.68rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--black); background: var(--red);
+  padding: 0.6rem 1.6rem; text-decoration:none;
+  transition: background .2s;
+}
+.nav-book:hover { background: #e74c3c; }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 0 4rem;
+  position: relative; overflow: hidden;
+}
+.hero-bg-lines {
+  position: absolute; inset:0; z-index:0;
+  background:
+    repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(255,255,255,0.018) 80px),
+    repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(255,255,255,0.018) 80px);
+}
+.hero-glow {
+  position:absolute; width:600px; height:600px;
+  border-radius:50%;
+  background: radial-gradient(circle, rgba(192,57,43,0.12) 0%, transparent 70%);
+  top:50%; left:55%; transform:translate(-50%,-50%);
+  z-index:0; pointer-events:none;
+}
+.hero-text { position:relative; z-index:1; }
+.hero-number {
+  font-family: 'Share Tech Mono', monospace; font-size:0.65rem;
+  letter-spacing: 0.25em; color: var(--red);
+  margin-bottom: 1.5rem;
+}
+.hero-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(3.8rem, 8vw, 7rem);
+  font-weight:900; line-height:0.9;
+  color: var(--white);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2rem;
+}
+.hero-title .outline {
+  -webkit-text-stroke: 1px var(--white);
+  color: transparent;
+}
+.hero-title .red { color: var(--red); }
+.hero-sub {
+  font-size:1rem; font-weight:400; color: var(--mist);
+  line-height:1.8; max-width:380px;
+  font-style: italic;
+  margin-bottom: 2.5rem;
+}
+.hero-ctas { display:flex; gap:1rem; align-items:center; }
+.btn-red {
+  font-family: 'Share Tech Mono', monospace; font-size:0.7rem;
+  letter-spacing:0.2em; text-transform:uppercase;
+  background: var(--red); color: var(--white);
+  padding:1rem 2.5rem; text-decoration:none;
+  border:none; cursor:none;
+  transition: background .2s, transform .15s;
+  display:inline-block;
+}
+.btn-red:hover { background:#e74c3c; transform:translateY(-2px); }
+.btn-ghost {
+  font-family: 'Share Tech Mono', monospace; font-size:0.7rem;
+  letter-spacing:0.2em; text-transform:uppercase;
+  border:1px solid var(--ash); color: var(--silver);
+  padding:1rem 2.5rem; text-decoration:none;
+  transition: border-color .2s, color .2s;
+  display:inline-block;
+}
+.btn-ghost:hover { border-color: var(--silver); color: var(--white); }
+
+.hero-visual {
+  position:relative; z-index:1;
+  display:flex; align-items:center; justify-content:center;
+  height:100vh;
+}
+.hero-art {
+  position:relative;
+  width: clamp(280px,35vw,480px);
+  height: clamp(280px,35vw,480px);
+}
+.art-outer {
+  position:absolute; inset:0;
+  border:1px solid rgba(192,57,43,0.2);
+  border-radius:50%;
+  animation: rot1 30s linear infinite;
+}
+.art-mid {
+  position:absolute; inset:12%;
+  border:1px solid rgba(184,151,90,0.15);
+  border-radius:50%;
+  animation: rot1 20s linear infinite reverse;
+}
+.art-inner {
+  position:absolute; inset:25%;
+  background: radial-gradient(circle at 40% 35%, #2a2a2a, #080808);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size: clamp(3.5rem, 6vw, 6rem);
+  box-shadow: 0 0 80px rgba(192,57,43,0.2), inset 0 0 40px rgba(0,0,0,0.8);
+}
+.art-dot {
+  position:absolute; width:6px; height:6px;
+  background:var(--red); border-radius:50%;
+  top:50%; left:50%;
+  transform-origin: 0 0;
+}
+@keyframes rot1 { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+.hero-stats {
+  position:absolute; right:-2rem; bottom:15%;
+  display:flex; flex-direction:column; gap:1.5rem;
+}
+.h-stat { border-left:2px solid var(--red-dim); padding-left:1rem; }
+.h-stat-n { font-family:'Cinzel',serif; font-size:1.8rem; color:var(--gold); }
+.h-stat-l { font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--smoke); }
+
+/* ── SECTION BASE ── */
+section { padding: 7rem 4rem; }
+.s-label {
+  font-family:'Share Tech Mono',monospace; font-size:0.65rem;
+  letter-spacing:0.25em; text-transform:uppercase; color:var(--red);
+  margin-bottom:0.8rem;
+}
+.s-title {
+  font-family:'Cinzel',serif;
+  font-size: clamp(2rem,4vw,3rem);
+  text-transform:uppercase; letter-spacing:0.1em;
+  color:var(--white); margin-bottom:1rem; line-height:1.1;
+}
+.s-line {
+  width:40px; height:1px; background:var(--red);
+  margin: 1.2rem 0 2.5rem;
+}
+
+/* ── ABOUT ── */
+#about {
+  background: var(--ink);
+  display:grid; grid-template-columns:1fr 1fr; gap:6rem; align-items:center;
+  position:relative; overflow:hidden;
+}
+#about::before {
+  content:'ELIANA'; position:absolute;
+  font-family:'Cinzel',serif; font-size:14rem; font-weight:900;
+  color:rgba(255,255,255,0.015); top:50%; left:50%;
+  transform:translate(-50%,-50%); white-space:nowrap; pointer-events:none;
+  letter-spacing:0.2em;
+}
+.about-body { font-size:1rem; color:var(--silver); line-height:1.9; font-style:italic; }
+.about-body p+p { margin-top:1.2rem; }
+.about-values { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:2rem; }
+.av { padding:1.2rem; border:1px solid var(--ash); }
+.av-icon { font-size:1.5rem; margin-bottom:0.5rem; }
+.av-label { font-family:'Share Tech Mono',monospace; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); margin-bottom:0.3rem; }
+.av-desc { font-size:0.88rem; color:var(--mist); line-height:1.6; }
+.about-img-block { position:relative; }
+.about-portrait {
+  width:100%; aspect-ratio:3/4;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0e0e0e 100%);
+  display:flex; align-items:center; justify-content:center;
+  font-size:5rem; border:1px solid var(--ash);
+  position:relative; overflow:hidden;
+}
+.about-portrait::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(to top, rgba(192,57,43,0.15) 0%, transparent 50%);
+}
+.portrait-tag {
+  position:absolute; bottom:-1rem; right:-1rem;
+  background:var(--red); padding:1rem 1.5rem;
+  font-family:'Share Tech Mono',monospace; font-size:0.65rem;
+  letter-spacing:0.15em; text-transform:uppercase; color:var(--white);
+}
+
+/* ── ARTISTS ── */
+#artists { background:var(--black); }
+.artists-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-top:2rem; }
+.artist-card {
+  background:var(--ink); border:1px solid var(--ash);
+  overflow:hidden; transition:border-color .3s, transform .3s;
+  position:relative;
+}
+.artist-card:hover { border-color:var(--red); transform:translateY(-6px); }
+.artist-img {
+  height:260px; display:flex; align-items:center; justify-content:center;
+  font-size:5rem; position:relative; overflow:hidden;
+}
+.artist-img::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(to top, var(--ink) 0%, transparent 60%);
+}
+.a1-bg { background: linear-gradient(135deg,#1c1008,#0a0a0a); }
+.a2-bg { background: linear-gradient(135deg,#0a0c1a,#0a0a0a); }
+.a3-bg { background: linear-gradient(135deg,#0a1a0a,#0a0a0a); }
+.artist-info { padding:1.5rem; }
+.artist-name { font-family:'Cinzel',serif; font-size:1.2rem; color:var(--white); margin-bottom:0.3rem; }
+.artist-style { font-family:'Share Tech Mono',monospace; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--red); margin-bottom:0.8rem; }
+.artist-bio { font-size:0.88rem; color:var(--mist); line-height:1.6; margin-bottom:1rem; }
+.artist-tags { display:flex; flex-wrap:wrap; gap:0.4rem; }
+.tag {
+  font-family:'Share Tech Mono',monospace; font-size:0.6rem;
+  letter-spacing:0.1em; text-transform:uppercase;
+  border:1px solid var(--ash); color:var(--smoke);
+  padding:0.3rem 0.7rem;
+}
+
+/* ── GALLERY ── */
+#gallery { background:var(--charcoal); padding:7rem 4rem; }
+.gallery-filter { display:flex; gap:0; margin-bottom:3rem; border-bottom:1px solid var(--ash); }
+.gf-btn {
+  font-family:'Share Tech Mono',monospace; font-size:0.65rem;
+  letter-spacing:0.15em; text-transform:uppercase;
+  padding:0.7rem 1.6rem; border:none; background:none;
+  color:var(--smoke); cursor:none;
+  border-bottom:1px solid transparent; margin-bottom:-1px;
+  transition:all .2s;
+}
+.gf-btn.active { color:var(--red); border-bottom-color:var(--red); }
+.gf-btn:hover { color:var(--silver); }
+.gallery-mosaic {
+  display:grid;
+  grid-template-columns: repeat(4,1fr);
+  grid-auto-rows: 200px;
+  gap:6px;
+}
+.g-cell {
+  display:flex; align-items:center; justify-content:center;
+  font-size:2.5rem; overflow:hidden;
+  transition:transform .4s, filter .3s;
+  filter: grayscale(40%);
+  position:relative;
+}
+.g-cell:hover { transform:scale(1.04); filter:grayscale(0%); z-index:2; }
+.g-cell::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(192,57,43,0.12),transparent);
+  opacity:0; transition:opacity .3s;
+}
+.g-cell:hover::after { opacity:1; }
+.gc-tall { grid-row:span 2; }
+.gc-wide { grid-column:span 2; }
+.gb1{background:linear-gradient(135deg,#1a0a0a,#0e0e0e);}
+.gb2{background:linear-gradient(135deg,#0a0a1a,#0e0e0e);}
+.gb3{background:linear-gradient(135deg,#0a1a0a,#0e0e0e);}
+.gb4{background:linear-gradient(135deg,#1a1a0a,#0e0e0e);}
+.gb5{background:linear-gradient(135deg,#1a0a1a,#0e0e0e);}
+.gb6{background:linear-gradient(135deg,#0a1a1a,#0e0e0e);}
+.gb7{background:linear-gradient(135deg,#1a0f0a,#0e0e0e);}
+.gb8{background:linear-gradient(135deg,#0f0a1a,#0e0e0e);}
+
+/* ── SERVICES ── */
+#services { background:var(--ink); }
+.services-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0; }
+.service-card {
+  padding:2.5rem 2rem;
+  border:1px solid var(--ash);
+  margin:-1px 0 0 -1px;
+  transition:background .3s;
+  position:relative; overflow:hidden;
+}
+.service-card::before {
+  content:''; position:absolute;
+  top:0; left:0; width:3px; height:100%;
+  background:var(--red);
+  transform:scaleY(0); transform-origin:bottom;
+  transition:transform .35s;
+}
+.service-card:hover::before { transform:scaleY(1); }
+.service-card:hover { background:rgba(192,57,43,0.04); }
+.svc-icon { font-size:2rem; margin-bottom:1.2rem; }
+.svc-name { font-family:'Cinzel',serif; font-size:1rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--white); margin-bottom:0.5rem; }
+.svc-desc { font-size:0.88rem; color:var(--mist); line-height:1.7; margin-bottom:1rem; }
+.svc-price { font-family:'Share Tech Mono',monospace; font-size:0.72rem; letter-spacing:0.1em; color:var(--gold); }
+
+/* ── BOOKING ── */
+#booking {
+  background:var(--black);
+  display:grid; grid-template-columns:1fr 1fr; gap:6rem; align-items:start;
+}
+.booking-info .s-title { margin-bottom:0; }
+.booking-note { font-size:1rem; color:var(--mist); line-height:1.8; margin-top:1.5rem; font-style:italic; }
+.booking-policies { margin-top:2.5rem; }
+.policy {
+  display:flex; gap:1rem; align-items:flex-start;
+  padding:1rem 0; border-bottom:1px solid var(--ash);
+}
+.policy-icon { font-size:1.1rem; margin-top:0.1rem; flex-shrink:0; }
+.policy-title { font-family:'Share Tech Mono',monospace; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); margin-bottom:0.3rem; }
+.policy-text { font-size:0.88rem; color:var(--mist); line-height:1.6; }
+.booking-form { background:var(--ink); padding:2.5rem; border:1px solid var(--ash); }
+.form-title { font-family:'Cinzel',serif; font-size:1rem; text-transform:uppercase; letter-spacing:0.15em; color:var(--white); margin-bottom:1.5rem; }
+.fg { display:flex; flex-direction:column; gap:0.4rem; margin-bottom:1.2rem; }
+.fg label { font-family:'Share Tech Mono',monospace; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--smoke); }
+.fg input, .fg select, .fg textarea {
+  background:var(--black); border:1px solid var(--ash);
+  color:var(--white); padding:0.8rem 1rem;
+  font-family:'Libre Baskerville',serif; font-size:0.9rem;
+  outline:none; transition:border-color .2s;
+  width:100%;
+}
+.fg input:focus, .fg select:focus, .fg textarea:focus { border-color:var(--red); }
+.fg select option { background:var(--black); }
+.fg textarea { resize:vertical; min-height:100px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.age-check { display:flex; gap:0.8rem; align-items:flex-start; margin-bottom:1.5rem; }
+.age-check input { width:16px; height:16px; accent-color:var(--red); flex-shrink:0; margin-top:2px; cursor:none; }
+.age-check label { font-size:0.82rem; color:var(--mist); line-height:1.5; }
+
+/* ── AFTERCARE ── */
+#aftercare { background:var(--charcoal); }
+.aftercare-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-top:2rem; }
+.step-card {
+  background:var(--ink); border:1px solid var(--ash);
+  padding:2rem 1.5rem; position:relative;
+  transition:border-color .3s;
+}
+.step-card:hover { border-color:var(--gold-dim); }
+.step-num {
+  font-family:'Cinzel',serif; font-size:3rem; font-weight:900;
+  color:rgba(192,57,43,0.12); position:absolute; top:1rem; right:1rem;
+  line-height:1;
+}
+.step-icon { font-size:1.8rem; margin-bottom:1rem; }
+.step-title { font-family:'Cinzel',serif; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--white); margin-bottom:0.6rem; }
+.step-desc { font-size:0.85rem; color:var(--mist); line-height:1.7; }
+
+/* ── REVIEWS ── */
+#reviews { background:var(--ink); }
+.reviews-ticker {
+  display:flex; gap:2rem; overflow:hidden;
+  margin-top:2rem; position:relative;
+}
+.reviews-ticker::before, .reviews-ticker::after {
+  content:''; position:absolute; top:0; bottom:0; width:100px; z-index:2;
+}
+.reviews-ticker::before { left:0; background:linear-gradient(to right,var(--ink),transparent); }
+.reviews-ticker::after { right:0; background:linear-gradient(to left,var(--ink),transparent); }
+.ticker-track {
+  display:flex; gap:2rem;
+  animation: ticker 30s linear infinite;
+}
+@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.rev-card {
+  background:var(--black); border:1px solid var(--ash);
+  padding:1.8rem; min-width:320px; flex-shrink:0;
+}
+.rev-stars { color:var(--red); font-size:0.85rem; margin-bottom:0.8rem; letter-spacing:0.1em; }
+.rev-text { font-size:0.92rem; color:var(--silver); line-height:1.7; font-style:italic; margin-bottom:1rem; }
+.rev-name { font-family:'Share Tech Mono',monospace; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); }
+
+/* ── FAQ ── */
+#faq { background:var(--black); }
+.faq-grid { display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:2rem; }
+.faq-item {
+  border:1px solid var(--ash); margin:-1px 0 0 -1px;
+  padding:2rem;
+}
+.faq-q {
+  font-family:'Cinzel',serif; font-size:0.9rem; text-transform:uppercase;
+  letter-spacing:0.08em; color:var(--white); margin-bottom:0.8rem;
+  cursor:none;
+}
+.faq-a { font-size:0.88rem; color:var(--mist); line-height:1.7; }
+
+/* ── CONTACT ── */
+#contact {
+  background:var(--charcoal);
+  display:grid; grid-template-columns:1fr 1fr; gap:0;
+}
+.contact-left { padding:7rem 4rem; background:var(--black); }
+.contact-right { padding:7rem 4rem; background:var(--ink); }
+.contact-item { display:flex; gap:1.2rem; margin-bottom:2rem; align-items:flex-start; }
+.ci-icon { font-size:1.3rem; margin-top:0.2rem; }
+.ci-label { font-family:'Share Tech Mono',monospace; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--red); margin-bottom:0.3rem; }
+.ci-val { font-size:1rem; color:var(--silver); line-height:1.6; }
+.social-row { display:flex; gap:1rem; margin-top:2rem; }
+.soc {
+  width:44px; height:44px; border:1px solid var(--ash);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.1rem; text-decoration:none;
+  transition:border-color .2s, background .2s;
+}
+.soc:hover { border-color:var(--red); background:rgba(192,57,43,0.1); }
+.hours-list { margin-top:1.5rem; }
+.hl { display:flex; justify-content:space-between; padding:0.7rem 0; border-bottom:1px solid var(--ash); }
+.hl-day { font-size:0.9rem; color:var(--silver); }
+.hl-time { font-family:'Share Tech Mono',monospace; font-size:0.75rem; color:var(--mist); }
+
+/* ── FOOTER ── */
+footer {
+  background:var(--black);
+  border-top:1px solid var(--ash);
+  padding:2.5rem 4rem;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.foot-logo { font-family:'Cinzel',serif; font-size:1.2rem; font-weight:900; letter-spacing:0.3em; text-transform:uppercase; }
+.foot-logo span { color:var(--red); }
+.foot-copy { font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:0.15em; color:var(--smoke); }
+.foot-legal { display:flex; gap:2rem; }
+.foot-legal a { font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--smoke); text-decoration:none; }
+.foot-legal a:hover { color:var(--red); }
+
+/* ── ANIMATIONS ── */
+.reveal { opacity:0; transform:translateY(28px); transition:opacity .8s ease, transform .8s ease; }
+.reveal.in { opacity:1; transform:none; }
+.reveal-left { opacity:0; transform:translateX(-30px); transition:opacity .8s ease, transform .8s ease; }
+.reveal-left.in { opacity:1; transform:none; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav { padding:1rem 1.5rem; }
+  .nav-links { display:none; }
+  #hero, #about, #booking, #contact { grid-template-columns:1fr; }
+  #hero { padding:6rem 1.5rem 3rem; }
+  .hero-stats { position:static; flex-direction:row; flex-wrap:wrap; margin-top:2rem; }
+  section { padding:4rem 1.5rem; }
+  .artists-grid, .services-grid, .aftercare-steps { grid-template-columns:1fr; }
+  .faq-grid { grid-template-columns:1fr; }
+  .gallery-mosaic { grid-template-columns:1fr 1fr; }
+  footer { flex-direction:column; gap:1rem; text-align:center; }
+  .contact-left, .contact-right { padding:4rem 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="curR"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><span>E</span>liana</div>
+  <ul class="nav-links">
+    <li><a href="#about">Studio</a></li>
+    <li><a href="#artists">Artists</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#booking" class="nav-book">Book Now</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-lines"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-text reveal">
+    <p class="hero-number">// EST. 2016 · NEW YORK</p>
+    <h1 class="hero-title">
+      <span class="outline">Ink</span><br/>
+      <span>Your</span><br/>
+      <span class="red">Story.</span>
+    </h1>
+    <p class="hero-sub">Eliana is a boutique tattoo studio where artistry meets permanence. Every mark we make is a collaboration between artist and skin.</p>
+    <div class="hero-ctas">
+      <a href="#booking" class="btn-red">Book a Session</a>
+      <a href="#gallery" class="btn-ghost">View Portfolio</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-art">
+      <div class="art-outer"></div>
+      <div class="art-mid"></div>
+      <div class="art-inner">🗡️</div>
+    </div>
+    <div class="hero-stats">
+      <div class="h-stat"><div class="h-stat-n">8+</div><div class="h-stat-l">Years Active</div></div>
+      <div class="h-stat"><div class="h-stat-n">3K+</div><div class="h-stat-l">Tattoos Done</div></div>
+      <div class="h-stat"><div class="h-stat-n">6</div><div class="h-stat-l">Master Artists</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="reveal-left">
+    <p class="s-label">Our Philosophy</p>
+    <h2 class="s-title">Art that<br/>lasts forever.</h2>
+    <div class="s-line"></div>
+    <div class="about-body">
+      <p>Eliana was founded by master artist Elena Vasquez in 2016 out of a conviction that tattoos deserve the same reverence as any fine art. We refused to be a walk-in shop with flash sheets.</p>
+      <p>Every client is a canvas. Every session begins with a conversation. We work across every style — from delicate fine-line to bold neo-traditional — but always with intention, precision, and care.</p>
+    </div>
+    <div class="about-values">
+      <div class="av"><div class="av-icon">🎨</div><div class="av-label">Custom Design</div><div class="av-desc">Every tattoo designed from scratch — no generic flash.</div></div>
+      <div class="av"><div class="av-icon">🛡️</div><div class="av-label">Sterile Standards</div><div class="av-desc">Medical-grade sterilization on every instrument, every time.</div></div>
+      <div class="av"><div class="av-icon">🤝</div><div class="av-label">Consultation First</div><div class="av-desc">We never pick up a needle until the design feels right to you.</div></div>
+      <div class="av"><div class="av-icon">♾️</div><div class="av-label">Free Touch-Ups</div><div class="av-desc">We stand behind our work. Touch-ups within 3 months are free.</div></div>
+    </div>
+  </div>
+  <div class="about-img-block reveal">
+    <div class="about-portrait">🗡️
+      <div class="portrait-tag">Est. 2016 · Brooklyn, NY</div>
+    </div>
+  </div>
+</section>
+
+<!-- ARTISTS -->
+<section id="artists">
+  <p class="s-label">Meet the Team</p>
+  <h2 class="s-title">Our Artists</h2>
+  <div class="s-line"></div>
+  <div class="artists-grid">
+    <div class="artist-card reveal">
+      <div class="artist-img a1-bg">🌹</div>
+      <div class="artist-info">
+        <div class="artist-name">Elena Vasquez</div>
+        <div class="artist-style">Founder & Lead Artist</div>
+        <p class="artist-bio">12 years of experience. Elena's signature is intricate botanical realism with a dark romantic edge. Featured in Inked Magazine.</p>
+        <div class="artist-tags">
+          <span class="tag">Realism</span>
+          <span class="tag">Botanical</span>
+          <span class="tag">Blackwork</span>
+        </div>
+      </div>
+    </div>
+    <div class="artist-card reveal">
+      <div class="artist-img a2-bg">⚡</div>
+      <div class="artist-info">
+        <div class="artist-name">Marco Reyes</div>
+        <div class="artist-style">Senior Artist</div>
+        <p class="artist-bio">A geometric precision obsessive. Marco builds sacred geometry and architectural patterns that feel like blueprints from another dimension.</p>
+        <div class="artist-tags">
+          <span class="tag">Geometric</span>
+          <span class="tag">Dotwork</span>
+          <span class="tag">Mandala</span>
+        </div>
+      </div>
+    </div>
+    <div class="artist-card reveal">
+      <div class="artist-img a3-bg">🌊</div>
+      <div class="artist-info">
+        <div class="artist-name">Suki Tanaka</div>
+        <div class="artist-style">Resident Artist</div>
+        <p class="artist-bio">Suki fuses traditional Japanese motifs with contemporary minimalism. Her fine-line work has a quiet power that speaks volumes.</p>
+        <div class="artist-tags">
+          <span class="tag">Japanese</span>
+          <span class="tag">Fine Line</span>
+          <span class="tag">Neo-Trad</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <p class="s-label">Portfolio</p>
+  <h2 class="s-title">Recent Work</h2>
+  <div class="s-line"></div>
+  <div class="gallery-filter">
+    <button class="gf-btn active" onclick="setFilter(this)">All</button>
+    <button class="gf-btn" onclick="setFilter(this)">Blackwork</button>
+    <button class="gf-btn" onclick="setFilter(this)">Realism</button>
+    <button class="gf-btn" onclick="setFilter(this)">Fine Line</button>
+    <button class="gf-btn" onclick="setFilter(this)">Geometric</button>
+  </div>
+  <div class="gallery-mosaic">
+    <div class="g-cell gc-tall gb1">🌹</div>
+    <div class="g-cell gb2">⚡</div>
+    <div class="g-cell gb3">🌊</div>
+    <div class="g-cell gc-wide gb4">🗡️</div>
+    <div class="g-cell gb5">🌙</div>
+    <div class="g-cell gc-tall gb6">🔱</div>
+    <div class="g-cell gb7">🐍</div>
+    <div class="g-cell gb8">🌿</div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <p class="s-label">What We Offer</p>
+  <h2 class="s-title">Services & Pricing</h2>
+  <div class="s-line"></div>
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <div class="svc-icon">✏️</div>
+      <div class="svc-name">Custom Tattoo</div>
+      <p class="svc-desc">Fully bespoke designs created in collaboration with your chosen artist. Includes a free consultation and design session.</p>
+      <div class="svc-price">From $200 · $150/hr</div>
+    </div>
+    <div class="service-card reveal">
+      <div class="svc-icon">🔬</div>
+      <div class="svc-name">Fine Line</div>
+      <p class="svc-desc">Delicate, precise linework for minimal yet striking tattoos. Perfect for portraits, botanicals, and script.</p>
+      <div class="svc-price">From $180 · $120/hr</div>
+    </div>
+    <div class="service-card reveal">
+      <div class="svc-icon">🖤</div>
+      <div class="svc-name">Blackwork & Dotwork</div>
+      <p class="svc-desc">Bold black ink, deep shading, intricate dot patterns. Covers large areas with graphic intensity.</p>
+      <div class="svc-price">From $250 · $160/hr</div>
+    </div>
+    <div class="service-card reveal">
+      <div class="svc-icon">🎭</div>
+      <div class="svc-name">Cover-Up</div>
+      <p class="svc-desc">Transform an old or unwanted tattoo into something you love. Requires an in-person consultation first.</p>
+      <div class="svc-price">From $300 · Varies</div>
+    </div>
+    <div class="service-card reveal">
+      <div class="svc-icon">💉</div>
+      <div class="svc-name">Piercing</div>
+      <p class="svc-desc">Ear, nose, and body piercings using implant-grade titanium and sterile single-use needles.</p>
+      <div class="svc-price">From $60 · Includes jewellery</div>
+    </div>
+    <div class="service-card reveal">
+      <div class="svc-icon">🔄</div>
+      <div class="svc-name">Touch-Up</div>
+      <p class="svc-desc">Free within 3 months of your session at Eliana. After that, flat touch-up rate applies.</p>
+      <div class="svc-price">Free (3 months) · $80 after</div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING -->
+<section id="booking">
+  <div class="booking-info reveal-left">
+    <p class="s-label">Reserve Your Spot</p>
+    <h2 class="s-title">Book a Session</h2>
+    <div class="s-line"></div>
+    <p class="booking-note">All bookings require a non-refundable $50 deposit to secure your appointment. This is deducted from your final session cost. We recommend booking at least 2–3 weeks in advance.</p>
+    <div class="booking-policies">
+      <div class="policy">
+        <div class="policy-icon">🪪</div>
+        <div><div class="policy-title">Age Requirement</div><div class="policy-text">You must be 18+ with valid government-issued photo ID on the day of your appointment.</div></div>
+      </div>
+      <div class="policy">
+        <div class="policy-icon">💸</div>
+        <div><div class="policy-title">Deposit Policy</div><div class="policy-text">$50 non-refundable deposit required. Cancellations with 48hr+ notice can reschedule; less than 48hrs forfeits deposit.</div></div>
+      </div>
+      <div class="policy">
+        <div class="policy-icon">🍽️</div>
+        <div><div class="policy-title">Day-Of Prep</div><div class="policy-text">Eat a full meal before your session. Avoid alcohol 24hrs prior. Wear or bring clothing that allows easy access to the tattoo area.</div></div>
+      </div>
+      <div class="policy">
+        <div class="policy-icon">🚫</div>
+        <div><div class="policy-title">Walk-Ins</div><div class="policy-text">Walk-ins are accepted on Saturdays only, subject to artist availability. Custom work always requires an appointment.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="booking-form reveal">
+    <div class="form-title">// Appointment Request</div>
+    <div class="form-row">
+      <div class="fg"><label>First Name</label><input type="text" placeholder="Elena"/></div>
+      <div class="fg"><label>Last Name</label><input type="text" placeholder="Smith"/></div>
+    </div>
+    <div class="fg"><label>Email</label><input type="email" placeholder="you@email.com"/></div>
+    <div class="fg"><label>Phone</label><input type="tel" placeholder="+1 (212) 000-0000"/></div>
+    <div class="form-row">
+      <div class="fg">
+        <label>Preferred Artist</label>
+        <select>
+          <option>Any Available</option>
+          <option>Elena Vasquez</option>
+          <option>Marco Reyes</option>
+          <option>Suki Tanaka</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Style</label>
+        <select>
+          <option>Not Sure Yet</option>
+          <option>Fine Line</option>
+          <option>Blackwork</option>
+          <option>Realism</option>
+          <option>Geometric</option>
+          <option>Japanese</option>
+          <option>Cover-Up</option>
+          <option>Piercing</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>Describe Your Idea</label><textarea placeholder="Tell us about your tattoo idea, placement, size, and any reference images you have in mind…"></textarea></div>
+    <div class="age-check">
+      <input type="checkbox" id="age"/>
+      <label for="age">I confirm I am 18 years or older and will bring valid photo ID to my appointment.</label>
+    </div>
+    <button class="btn-red" style="width:100%; text-align:center;">Submit Request</button>
+  </div>
+</section>
+
+<!-- AFTERCARE -->
+<section id="aftercare">
+  <p class="s-label">Post-Session</p>
+  <h2 class="s-title">Aftercare Guide</h2>
+  <div class="s-line"></div>
+  <div class="aftercare-steps">
+    <div class="step-card reveal">
+      <div class="step-num">01</div>
+      <div class="step-icon">🩹</div>
+      <div class="step-title">Keep It Covered</div>
+      <p class="step-desc">Leave the wrap on for 2–4 hours. If we used a second-skin bandage, keep it on for 3–5 days and let it breathe naturally.</p>
+    </div>
+    <div class="step-card reveal">
+      <div class="step-num">02</div>
+      <div class="step-icon">🧼</div>
+      <div class="step-title">Clean Gently</div>
+      <p class="step-desc">Wash twice daily with fragrance-free soap and lukewarm water. Pat dry — never rub. No submerging in water for 2 weeks.</p>
+    </div>
+    <div class="step-card reveal">
+      <div class="step-num">03</div>
+      <div class="step-icon">💧</div>
+      <div class="step-title">Moisturise</div>
+      <p class="step-desc">Apply a thin layer of unscented lotion (Lubriderm or Aveeno) 2–3× daily. Avoid petroleum jelly or heavily scented products.</p>
+    </div>
+    <div class="step-card reveal">
+      <div class="step-num">04</div>
+      <div class="step-icon">☀️</div>
+      <div class="step-title">Sun & Water</div>
+      <p class="step-desc">No direct sun for 4 weeks. After healing, always use SPF 50+ on tattoos. No pools, hot tubs, or ocean for 2–3 weeks.</p>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <p class="s-label">Client Stories</p>
+  <h2 class="s-title">What People Say</h2>
+  <div class="s-line"></div>
+  <div class="reviews-ticker">
+    <div class="ticker-track" id="ticker">
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">Elena listened to every detail and delivered something beyond what I imagined. My botanical sleeve is a masterpiece. I get stopped on the street constantly.</p><div class="rev-name">— Jasmine R.</div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">Marco's geometric work is on another level. The precision is unreal — like it was laser-printed onto my skin. The studio itself feels like a gallery.</p><div class="rev-name">— Tyler M.</div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">I was nervous for my first tattoo and Suki made me feel completely at ease. The fine-line cherry blossom on my wrist is exactly what I dreamed of.</p><div class="rev-name">— Aiko P.</div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">Eliana covered an old tattoo I'd been ashamed of for 8 years. The cover-up is so beautiful I actually started crying in the chair. Worth every penny.</p><div class="rev-name">— Marcus D.</div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">The consultation process sets them apart. No other studio spent that much time understanding what I wanted before touching a machine.</p><div class="rev-name">— Sofia L.</div></div>
+      <!-- duplicate for seamless loop -->
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">Elena listened to every detail and delivered something beyond what I imagined. My botanical sleeve is a masterpiece. I get stopped on the street constantly.</p><div class="rev-name">— Jasmine R.</div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">Marco's geometric work is on another level. The precision is unreal — like it was laser-printed onto my skin. The studio itself feels like a gallery.</p><div class="rev-name">— Tyler M.</div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">I was nervous for my first tattoo and Suki made me feel completely at ease. The fine-line cherry blossom on my wrist is exactly what I dreamed of.</p><div class="rev-name">— Aiko P.</div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">Eliana covered an old tattoo I'd been ashamed of for 8 years. The cover-up is so beautiful I actually started crying in the chair. Worth every penny.</p><div class="rev-name">— Marcus D.</div></div>
+      <div class="rev-card"><div class="rev-stars">★★★★★</div><p class="rev-text">The consultation process sets them apart. No other studio spent that much time understanding what I wanted before touching a machine.</p><div class="rev-name">— Sofia L.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <p class="s-label">Common Questions</p>
+  <h2 class="s-title">FAQ</h2>
+  <div class="s-line"></div>
+  <div class="faq-grid">
+    <div class="faq-item reveal">
+      <div class="faq-q">Does it hurt?</div>
+      <p class="faq-a">All tattoos involve some discomfort. Pain level varies greatly by placement — ribs, spine, and feet tend to be more intense; arms and thighs less so. Our artists work at a pace that keeps you comfortable.</p>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">How long does healing take?</div>
+      <p class="faq-a">Surface healing takes 2–3 weeks. Full dermal healing takes 3–4 months. During this time the tattoo may peel and look slightly dull — that's normal. Follow our aftercare guide carefully.</p>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">Can I bring reference images?</div>
+      <p class="faq-a">Absolutely — and we encourage it. Bring photos of styles you love, placements you've seen, and even images with zero tattoo context (landscapes, art, anything inspiring). The more context, the better the outcome.</p>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">What if I need to cancel?</div>
+      <p class="faq-a">Cancel or reschedule 48+ hours before your appointment and your deposit can be transferred to a new date. Cancellations under 48 hours forfeit the deposit. No-shows are not rebooked.</p>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">Do you do walk-ins?</div>
+      <p class="faq-a">Walk-ins are welcome on Saturdays only, subject to artist availability. Custom designs always require a prior consultation. We recommend calling ahead even for walk-in days.</p>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">What health conditions affect tattooing?</div>
+      <p class="faq-a">Certain conditions (blood thinners, diabetes, skin disorders, pregnancy) may affect your ability to be tattooed or your healing. Always disclose medical conditions at consultation so we can advise properly.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="padding:0;">
+  <div class="contact-left">
+    <p class="s-label">Find Us</p>
+    <h2 class="s-title">Get in Touch</h2>
+    <div class="s-line"></div>
+    <div class="contact-item">
+      <div class="ci-icon">📍</div>
+      <div><div class="ci-label">Studio Address</div><div class="ci-val">218 Bedford Ave, Williamsburg<br/>Brooklyn, NY 11211</div></div>
+    </div>
+    <div class="contact-item">
+      <div class="ci-icon">📞</div>
+      <div><div class="ci-label">Phone</div><div class="ci-val">+1 (718) 555-0227</div></div>
+    </div>
+    <div class="contact-item">
+      <div class="ci-icon">📧</div>
+      <div><div class="ci-label">Email</div><div class="ci-val">hello@elianastudio.com</div></div>
+    </div>
+    <div class="contact-item">
+      <div class="ci-icon">📱</div>
+      <div><div class="ci-label">Social</div><div class="ci-val">@elianainktattoo</div></div>
+    </div>
+    <div class="social-row">
+      <a class="soc" href="#">📸</a>
+      <a class="soc" href="#">🎵</a>
+      <a class="soc" href="#">🐦</a>
+      <a class="soc" href="#">▶️</a>
+    </div>
+  </div>
+  <div class="contact-right">
+    <p class="s-label">Opening Hours</p>
+    <h2 class="s-title">When We're Open</h2>
+    <div class="s-line"></div>
+    <div class="hours-list">
+      <div class="hl"><span class="hl-day">Monday</span><span class="hl-time">Closed</span></div>
+      <div class="hl"><span class="hl-day">Tuesday – Friday</span><span class="hl-time">11:00 AM – 8:00 PM</span></div>
+      <div class="hl"><span class="hl-day">Saturday</span><span class="hl-time">10:00 AM – 7:00 PM</span></div>
+      <div class="hl"><span class="hl-day">Sunday</span><span class="hl-time">12:00 PM – 5:00 PM</span></div>
+    </div>
+    <div style="margin-top:2.5rem; padding:1.5rem; border:1px solid var(--ash);">
+      <div style="font-family:'Share Tech Mono',monospace; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--red); margin-bottom:0.6rem;">Health & Safety</div>
+      <p style="font-size:0.88rem; color:var(--mist); line-height:1.7;">All equipment is sterilized in an autoclave. Single-use needles are opened in front of every client. We maintain full compliance with NYC health department regulations.</p>
+    </div>
+    <div style="margin-top:1rem; padding:1.5rem; border:1px solid var(--ash);">
+      <div style="font-family:'Share Tech Mono',monospace; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--red); margin-bottom:0.6rem;">Consent & Privacy</div>
+      <p style="font-size:0.88rem; color:var(--mist); line-height:1.7;">All clients sign a consent form before any session begins. Client photography is only shared with explicit written permission. Your data is never sold or shared.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-logo"><span>E</span>liana</div>
+  <div class="foot-copy">© 2026 Eliana Tattoo Studio · Brooklyn, NY · All Rights Reserved</div>
+  <div class="foot-legal">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms</a>
+    <a href="#">Consent Form</a>
+  </div>
+</footer>
+
+<script>
+// Custom cursor
+const cur = document.getElementById('cur');
+const curR = document.getElementById('curR');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top  = e.clientY + 'px';
+  setTimeout(()=>{ curR.style.left = e.clientX+'px'; curR.style.top = e.clientY+'px'; }, 80);
+});
+document.querySelectorAll('a,button,input,select,textarea').forEach(el => {
+  el.addEventListener('mouseenter',()=>{ cur.style.width='18px'; cur.style.height='18px'; curR.style.width='52px'; curR.style.height='52px'; });
+  el.addEventListener('mouseleave',()=>{ cur.style.width='10px'; cur.style.height='10px'; curR.style.width='36px'; curR.style.height='36px'; });
+});
+
+// Gallery filter (cosmetic)
+function setFilter(btn){
+  document.querySelectorAll('.gf-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// Scroll reveal
+const ro = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+},{threshold:0.1});
+document.querySelectorAll('.reveal,.reveal-left').forEach(el=>ro.observe(el));
+</script>
+</body>
+</html>
